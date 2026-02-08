@@ -2,7 +2,16 @@ import os
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from libretranslatepy import LibreTranslateAPI
+from LibreTranslateAPI import LibreTranslateAPI
+from mask import mask_vi, mask_en, unmask_content
+
+
+import logging
+
+# Configure logging
+# Uvicorn overrides logging config, so we hook into uvicorn's logger
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.DEBUG)
 
 app = FastAPI()
 
@@ -22,13 +31,32 @@ class TranslateRequest(BaseModel):
 @app.post("/translate")
 def translate(request: TranslateRequest):
     try:
+        # 1. Mask content to skip translation for specific POS tags
+        if request.source == "en":
+            masked_q, mapping = mask_en(request.q)
+        else:
+            masked_q, mapping = mask_vi(request.q)
+
         lt = LibreTranslateAPI(LIBRETRANSLATE_URL, api_key=request.api_key)
-        result = lt.translate(
-            request.q,
-            request.source,
-            request.target
+        
+        # We force text format since we are handling the masking ourselves now
+        # and not relying on HTML tags
+        translation_response = lt.translate(
+            q=masked_q,
+            source=request.source,
+            target=request.target,
+            format="text",
         )
-        return {"translatedText": result}
+        
+        translated_text = translation_response.get("translatedText", "")
+
+        # 4. Unmask content
+        clean_text = unmask_content(translated_text, mapping)
+        
+        # Update response with clean text
+        translation_response["translatedText"] = clean_text
+
+        return translation_response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

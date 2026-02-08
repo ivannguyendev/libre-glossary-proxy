@@ -2,11 +2,14 @@ version: "3.8"
 
 services:
   libretranslate:
-    image: libretranslate/libretranslate
+    image: libretranslate/libretranslate:v1.8.4
     restart: unless-stopped
     environment:
       - LT_LOAD_ONLY=vi,en
       - LT_UPDATE_MODELS=true
+      - LT_FRONTEND_LANGUAGE_SOURCE=vi
+      - LT_FRONTEND_LANGUAGE_TARGET=en
+      - LT_FRONTEND_TIMEOUT=1000
     volumes:
       - lt-local-models:/home/libretranslate/.local
 

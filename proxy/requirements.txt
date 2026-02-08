@@ -1,5 +1,7 @@
 fastapi
 uvicorn
-libretranslatepy
+
 python-dotenv
 httpx
+underthesea
+spacy

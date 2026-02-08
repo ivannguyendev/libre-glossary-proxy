@@ -33,9 +33,20 @@ curl -X POST "https://proxy.libre-glossary-proxy.orb.local/translate" \
 curl -X POST "https://proxy.libre-glossary-proxy.orb.local/translate" \
      -H "Content-Type: application/json" \
      -d '{
-           "q": "Xin chào thế giới",
+           "q": "Bình đang đi học",
            "source": "vi",
            "target": "en"
+         }'
+```
+
+**English to Vietnamese:**
+```bash
+curl -X POST "https://proxy.libre-glossary-proxy.orb.local/translate" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "q": "Apple is looking at buying U.K. startup for $1 billion",
+           "source": "en",
+           "target": "vi"
          }'
 ```
 
