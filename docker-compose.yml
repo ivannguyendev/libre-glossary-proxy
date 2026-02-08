@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  libretranslate:
+    image: libretranslate/libretranslate
+    restart: unless-stopped
+    environment:
+      - LT_LOAD_ONLY=vi,en
+      - LT_UPDATE_MODELS=true
+    volumes:
+      - lt-local-models:/home/libretranslate/.local
+
+  proxy:
+    build: ./proxy
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - LIBRETRANSLATE_URL=http://libretranslate:5000
+    depends_on:
+      - libretranslate
+
+volumes:
+  lt-local-models:

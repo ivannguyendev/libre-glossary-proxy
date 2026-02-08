@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+libretranslatepy
+python-dotenv
+httpx
